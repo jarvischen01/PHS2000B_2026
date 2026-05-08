@@ -1,0 +1,122 @@
+---
+title: 'PHS 2000B Problem Set 9: Missing Data'
+date: "Due Tuesday, April 29, 2025 at 11:59pm"
+output:
+  pdf_document: default
+  word_document: default
+header-includes: \usepackage{amsmath}
+---
+
+```{r donotedit, echo = FALSE, warning=FALSE, message=FALSE}
+library("knitr"); options(digits = 3, scipen = 2)
+```
+
+# Part I: A Missing Confounder (12 points)
+
+For a recent research project, you collected data on alcohol abuse as a confounder of the relationship between exposure $A$ and  outcome $Y$. All individuals in the study reported $A$ and $Y$, but not all individuals reported alcohol abuse. In fact, you suspect that the only people who refused to report alcohol abuse were those who abused alcohol because they felt uncomfortable reporting it. Among alcohol abusers, you suspect that who ends up with a missing value and who ends up with an observed value for alcohol abuse is essentially random (for instance, you can imagine that each alcohol abuser flips a coin to decide whether to complete the alcohol abuse question or leave it unanswered). You have not collected data on any other behavioral variables.
+
+Although it seems that data on alcohol abuse are Missing Not At Random (MNAR) - because the probability of not responding to the question on alcohol abuse is determined by the value of the alcohol abuse variable itself - it's important to think through the implications of missing data within the context of your specific estimand and analytic approach.
+
+With this scenario in mind, please answer the following questions:
+
+1. Draw a DAG corresponding to the missigness scenario described in the prompt. (2 pt)
+
+2. If we conducted a complete-case analysis *among non-alcohol abusers,* could we obtain an unbiased estimate of the causal effect of $A$ on $Y$ in this subgroup? Briefly explain, including a DAG that corresponds to this analysis. (3 pt)
+
+3. Similarly, if we conducted a complete-case analysis *among alcohol abusers,* could we obtain an unbiased estimate of the causal effect of $A$ on $Y$ in this subgroup? Briefly explain, including a DAG that corresponds to this analysis.  (3 pt)
+
+4.	If we assume no effect modification by alcohol abuse, could we obtain an unbiased estimate of the average (i.e., marginal) causal effect of $A$ on $Y$ using a complete case analysis? Briefly explain your answer. (2 pts)
+
+5.	Considering the missingness mechanism in this scenario, would using multiple imputation yield an unbiased estimate of the average causal effect of $A$ on $Y$? Briefly explain your answer. (2 pts)
+
+\newpage
+    
+# Part II: Multiple Imputation (28 points) 
+
+Electronic bullying has a number of serious consequences for adolescents.  We'll be using the 2015 Youth Risk Behavior Survey (YRBS) to investigate the association between electronic bullying and suicidal ideation (serious consideration of suicide), adjusting for age, sex, number of hours per day spent on a computer, and having been in a physical fight. 
+
+The variables which we will need for this analysis are described below:
+
++ *Q25*: During the past 12 months, have you ever been electronically bullied? (1=Yes, 2=No)
++ *Q27*: During the past 12 months, did you ever seriously consider attempting suicide? (1=Yes, 2=No)
++ *Q1*: How old are you (in years)? (1= $\leq$ 12, 2=13, 3=14, 4=15, 5=16, 6=17, 7= $\geq$ 18)
++ *Q2*: What is your sex? (1=Female, 2=Male)
++ *Q82*: On an average school day, how many hours do you play video or computer games or use a computer for something that is not school work? (1=0 hours, 2= <1 hour, 3=1 hour, 4=2 hours, 5=3 hours, 6=4 hours 7=5+ hours)
++ *QN18*: Student was in a physical fight one or more times during past 12 months (1=Yes, 2=No)
+
+***Code is available on Canvas, as is the full data dictionary for the 2015 YRBS data.***
+
+Note that the YRBS survey asked about sex in a way that does not reflect the richness and diversity of the world in which we live (e.g., the survey did not explicitly attempt to include transgender and non-binary individuals and did not ask separately about gender identity, among other shortcomings). In this problem set, the original YRBS data and questions have been retained to remind us that these shortcomings still exist in many of the datasets we use. To pretend otherwise would be to erase an injustice that has been present for decades. We hope that highlighting the injustice serves as a reminder that we can strive to do better when we collect our own primary data.
+
+```{r loaddata, warning=FALSE, eval=FALSE, echo=TRUE}
+# your code here
+```
+
+1. Describe the pattern of missing data in the six variables listed above. Use at least one figure to support your statements and be sure to describe (i) the magnitude of the missingness problem, (ii) any obvious correlation between missingness in multiple variables, and (iii) whether or not the missingness is monotone. (4 pts)
+
+```{r describe, warning=FALSE, eval=FALSE, echo=TRUE}
+# your code here
+```
+
+2. You hypothesize that participants' grades in school and weapon carrying may be related to missingness. Do the two variables appear to be predictors of whether the student got into a fight in the last 12 months (the variable with the most missingness)? Provide some support for your response in the form of a figure, frequency table, or regression model results. (4 pts)
+
+```{r predictors, warning=FALSE, eval=FALSE, echo=TRUE}
+# your code here
+```
+
+3. Run a complete-case logistic regression model and provide an estimate of the odds ratio (and its 95% CI) for suicidal ideation comparing those who did vs. did not experience electronic bullying, adjusting for age, sex, number of hours per day spent on a computer, and having been in a physical fight. Interpret the odds ratio. *Note: For the purposes of this analysis, treat age and number of hours spent on a computer as continuous variables and ignore any product terms or non-linearities.* (2 pts)
+
+```{r completecase, warning=FALSE, eval=FALSE, echo=TRUE}
+# your code here
+```
+
+4. Use the `mice` package in R to perform multiple imputation. Create $m=5$ imputed datasets. At a minimum, your imputation model should include (i) the two variables from Question 2 and (ii) all study variables. Briefly describe the imputation algorithm you used and any modeling assumption(s) that were made (5 sentences maximum). (3 pts)
+
+```{r mice, warning=FALSE, eval=FALSE, echo=TRUE}
+# your code here
+```
+
+5. For the variable with the most missingness (i.e., whether the student got into a fight in the last 12 months), provide a table or figure describing this variable's distribution in both the observed data \underline{and} in *one* of the imputed datasets you created in Question 4. Consider both (i) the marginal distribution of the variable getting into a fight in the last 12 months and (ii) the conditional distribution of the variable getting into a fight in the last 12 months, conditional on one other variable which you hypothesize may be predictive of missingness.  Why might you see differences between these distributions (i.e., when comparing the marginal and conditional distributions in the observed data to those same distributions in one of the imputed datasets), even if you modeled the missingness correctly? (4 pts)
+
+```{r distributions, warning=FALSE, eval=FALSE, echo=TRUE}
+# your code here
+```
+
+6. Obtain a pooled estimate across the 5 imputations for the odds ratio of suicidal ideation comparing those who did vs. did not experience electronic bullying, adjusting for age, sex, number of hours per day spent on a computer, and having been in a physical fight. Briefly comment on whether this pooled estimate is similar to or different from the estimate you obtained in Question 4 (complete case analysis). (3 pts)
+
+```{r pooledestimate, warning=FALSE, eval=FALSE, echo=TRUE}
+# your code here
+```
+
+7. Report estimates of (i) the relative increase in variance due to non-response ($r$) and (ii) the fraction of missing information ($\hat{\lambda}$) for the log-odds ratio of suicidal ideation comparing those who did vs. did not experience electronic bullying. Comment on the magnitude of these values and what this tells you about inferential uncertainty in your $\hat{\beta}$. *Note: The output will provide you estimates for each coefficient in the model, i.e., the intercept, Q25, Q1, Q2, Q82, and QN18 in that order.* (4 pts)
+
+```{r estimates, warning=FALSE, eval=FALSE, echo=TRUE}
+# your code here
+```
+
+8. To understand how pooled estimates are calculated, we will now implement Rubin's rules by hand. For simplicity of illustration, we'll assume that we used OLS instead of logistic regression to answer the prior question (although Rubin's rules may also be applied to logistic regression) and that we created only two imputed datasets. We obtain the following results (via the code below) after running the OLS model in the two imputed datasets. Provide a *pooled estimate* for (i) the beta coefficient associated with electronic bullying and (ii) the standard error of this beta coefficient. Show your work. (4 pts)
+
+```{r rubins, eval=FALSE, echo=TRUE}
+if (!require("mice")) install.packages("mice")
+library("mice")
+
+yrbs2015$Q25[yrbs2015$Q25 == 2] <- 0
+yrbs2015$Q27[yrbs2015$Q27 == 2] <- 0
+yrbs2015$Q2[yrbs2015$Q2 == 2] <- 0
+yrbs2015$QN18[yrbs2015$QN18 == 2] <- 0
+
+yrbs2015.2 <- subset(yrbs2015, select = c(Q25, Q27, Q1, Q2, Q82, QN18))
+
+impdata1 <- mice(yrbs2015.2, m=2,
+                 meth=c("logreg", "logreg", "pmm", "logreg", "pmm", "logreg"),
+                 seed=500)
+
+MICEresults1 <- with(impdata1, lm(Q27 ~ Q25 + Q1 + Q2 + Q82 + QN18))
+```
+
+
+```{r miceresults, eval=FALSE, echo=TRUE}
+summary(MICEresults1)
+```
+
+
